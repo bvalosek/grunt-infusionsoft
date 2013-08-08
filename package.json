@@ -36,6 +36,7 @@
     "request": "~2.26.0",
     "cheerio": "~0.12.1",
     "wordwrap": "0.0.2",
-    "inflection": "~1.2.6"
+    "inflection": "~1.2.6",
+    "q": "~0.9.6"
   }
 }
