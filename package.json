@@ -1,0 +1,41 @@
+{
+  "name": "grunt-infusionsoft",
+  "description": "Create classes and interfaces for Infusionsoft's XML-RPC API from their online documentation.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/bvalosek/grunt-infusionsoft",
+  "author": {
+    "name": "Brandon Valosek",
+    "email": "bvalosek@gmail.com",
+    "url": "http://twitter.com/bvalosek"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bvalosek/grunt-infusionsoft.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bvalosek/grunt-infusionsoft/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/bvalosek/grunt-infusionsoft/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "keywords": [
+    "gruntplugin",
+    "infusionsoft",
+    "typedef"
+  ],
+  "dependencies": {
+    "typedef": "~0.13.2",
+    "underscore": "~1.5.1",
+    "request": "~2.26.0",
+    "cheerio": "~0.12.1",
+    "wordwrap": "0.0.2",
+    "inflection": "~1.2.6"
+  }
+}
