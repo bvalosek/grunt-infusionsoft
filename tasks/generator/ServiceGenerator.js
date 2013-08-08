@@ -6,6 +6,7 @@ module.exports = ServiceGenerator = require('typedef')
 // Create our service interfaces for XML RPC
 .class('ServiceGenerator') .extends(Generator) .define({
 
+    // Get that mess ready on constrUCT
     __constructor__: function(service)
     {
         var moduleName = this.moduleName = 'I' + service.serviceName;
@@ -25,8 +26,6 @@ module.exports = ServiceGenerator = require('typedef')
 
         this.addBreak(2);
         this.append('});');
-
-        console.log(this.code);
     },
 
     __hidden__addMethod: function(method)

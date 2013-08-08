@@ -44,9 +44,67 @@ module.exports = Scraper = require('typedef')
             // we've got the data in the arguments var, iterate over that and
             // build the hash to return
             return Q.spread(requests, function() {
-                console.log('All services loaded');
                 return _(arguments).toArray();
             });
+        });
+    },
+
+    // Load all the tables up
+    scrapeTables: function()
+    {
+        var url   = this.tableUrl;
+        var _this = this;
+
+        return Q.nfcall(request, url + '/index.html').then(function(data) {
+            var $        = cheerio.load(data);
+            var list     = $('#tables li');
+            var requests = [];
+
+            list.each(function() {
+                var $this       = this;
+                var title       = $this.find('a').text();
+                var link        = $this.find('a').attr('href');
+
+                requests.push(_this.getTableFields(url + '/' + link));
+            });
+
+            return Q.spread(requests, function() {
+                return _(arguments).toArray();
+            });
+
+        });
+    },
+
+    // Scrape the actual table page to get the individiual fields
+    getTableFields: function(tableUrl)
+    {
+        return Q.nfcall(request, tableUrl).then(function(data) {
+            var $     = cheerio.load(data);
+            var title = $('h2').first().text();
+            var $rows = $('table tr');
+
+            var ret = {
+                tableName: title,
+                fields: []
+            };
+
+            $rows.each(function() {
+                var $row = $(this);
+                var name = $row.find('td').first().text();
+                var type = $row.find('td:nth-child(2)').text();
+                var access = $row.find('td:nth-child(3)')
+                    .text().toLowerCase().trim().split(' ');
+
+                if (!name) return;
+
+                ret.fields.push({
+                    name: name,
+                    type: type,
+                    access: access
+                });
+            });
+
+            return ret;
         });
     },
 
@@ -61,8 +119,6 @@ module.exports = Scraper = require('typedef')
                 $('.content h1').text().replace(/API/g, '').trim();
             var serviceDescription =
                 $('h1').nextAll('p').first().text();
-
-            console.log(serviceName + ' page loaded');
 
             var ret = {
                 serviceName: serviceName,
