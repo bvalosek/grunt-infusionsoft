@@ -19,8 +19,6 @@ module.exports = TableGenerator = require('typedef')
 
         var _this = this;
         table.fields.forEach(function(field, n) {
-            if (n) _this.append(',\n');
-
             var name   = field.name;
             var type   = field.type.toLowerCase();
 
@@ -28,6 +26,8 @@ module.exports = TableGenerator = require('typedef')
             if (name.indexOf('.') != -1) {
                 return;
             }
+
+            if (n) _this.append(',\n');
 
             if (type == 'long' || type == 'double' || type == 'integer')
                 type = 'number';

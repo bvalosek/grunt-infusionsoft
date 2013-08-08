@@ -1,6 +1,8 @@
-var Scraper          = require('./generator/Scraper');
-var ServiceGenerator = require('./generator/ServiceGenerator');
-var TableGenerator   = require('./generator/TableGenerator');
+var Scraper            = require('./generator/Scraper');
+var ServiceGenerator   = require('./generator/ServiceGenerator');
+var TableGenerator     = require('./generator/TableGenerator');
+var NamespaceGenerator = require('./generator/NamespaceGenerator');
+var Q                  = require('q');
 
 module.exports = function(grunt) {
 
@@ -18,7 +20,7 @@ module.exports = function(grunt) {
             var scraper = new Scraper();
 
             // Scrape and output all of the Service API endpoints
-            scraper.scrapeServices().done(function(services) {
+            var ps = scraper.scrapeServices().then(function(services) {
                 services.forEach(function(service) {
                     var g = new ServiceGenerator(service);
                     grunt.file.write(
@@ -27,7 +29,7 @@ module.exports = function(grunt) {
             });
 
             // Scrape and output all of the Tables from the dox
-            scraper.scrapeTables().done(function(tables) {
+            var pt = scraper.scrapeTables().then(function(tables) {
                 tables.forEach(function(table) {
                     var g = new TableGenerator(table);
                     grunt.file.write(
@@ -36,7 +38,11 @@ module.exports = function(grunt) {
                 });
             });
 
-            // Create the overall namespace API
+            // Write all the files out to the namespace file
+            Q.all([ps, pt]).done(function() {
+                var g = new NamespaceGenerator(scraper);
+                grunt.file.write(f.dest + '/api.js', g.code);
+            });
 
         });
 

@@ -18,6 +18,10 @@ module.exports = Scraper = require('typedef')
             'http://help.infusionsoft.com';
         this.tableUrl = opts.tableUrl ||
             'http://developers.infusionsoft.com/dbDocs';
+
+        // Keep track of the modules
+        this.tables   = [];
+        this.services = [];
     },
 
     // Get a promise representing an eventua lhash for all the infusionsoft API
@@ -76,12 +80,16 @@ module.exports = Scraper = require('typedef')
     },
 
     // Scrape the actual table page to get the individiual fields
-    getTableFields: function(tableUrl)
+    __hidden__getTableFields: function(tableUrl)
     {
+        var _this = this;
+
         return Q.nfcall(request, tableUrl).then(function(data) {
             var $     = cheerio.load(data);
             var title = $('h2').first().text();
             var $rows = $('table tr');
+
+            _this.tables.push(title);
 
             var ret = {
                 tableName: title,
@@ -112,6 +120,8 @@ module.exports = Scraper = require('typedef')
     // for a Service API endpoint, return promise for node of information
     __hidden__getServiceInterface: function(href)
     {
+        var _this = this;
+
         return Q.nfcall(request, href).then(function(data) {
             var $ = cheerio.load(data);
 
@@ -119,6 +129,8 @@ module.exports = Scraper = require('typedef')
                 $('.content h1').text().replace(/API/g, '').trim();
             var serviceDescription =
                 $('h1').nextAll('p').first().text();
+
+            _this.services.push(serviceName);
 
             var ret = {
                 serviceName: serviceName,
