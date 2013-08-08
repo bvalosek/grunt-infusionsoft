@@ -1,4 +1,5 @@
-var Scraper    = require('./generator/Scraper');
+var Scraper          = require('./generator/Scraper');
+var ServiceGenerator = require('./generator/ServiceGenerator');
 
 module.exports = function(grunt) {
 
@@ -13,11 +14,20 @@ module.exports = function(grunt) {
         this.files.forEach(function(f) {
             var dest = f.dest;
 
-            new Scraper().scrapeServices().done(function(data) {
-                console.log(
-                    require('util')
-                        .inspect(data, { depth: null, colors: true }));
+            // Scrape and output all of the Service API endpoints
+            new Scraper().scrapeServices().done(function(services) {
+                services.forEach(function(service) {
+                    var g = new ServiceGenerator(service);
+                    grunt.file.write(
+                        f.dest + '/services/' + g.moduleName + '.js', g.code);
+                });
             });
+
+            // Scrape and output all of the Tables from the dox
+
+            // Create the overall namespace API
+
+
         });
 
     });
