@@ -1,7 +1,7 @@
 {
   "name": "grunt-infusionsoft",
   "description": "Create classes and interfaces for Infusionsoft's XML-RPC API from their online documentation.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/bvalosek/grunt-infusionsoft",
   "author": {
     "name": "Brandon Valosek",
