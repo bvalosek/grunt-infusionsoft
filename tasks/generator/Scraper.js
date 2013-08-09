@@ -168,9 +168,14 @@ module.exports = Scraper = require('typedef')
                     params: []
                 };
 
+                // Fix for documentation not having api keys
+                if (serviceName == 'DiscountService')
+                    methodInfo.params.push('apiKey');
+
                 // iterate over all the paramters
                 $table.find('tbody tr').each(function() {
                     var td = $(this).find('td').first().text().trim();
+
                     if (td != 'Key' && td != 'privateKey' && td != 'key')
                         methodInfo.params.push(td);
                     else

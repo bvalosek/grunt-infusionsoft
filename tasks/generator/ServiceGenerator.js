@@ -33,7 +33,12 @@ module.exports = ServiceGenerator = require('typedef')
         this.addBreak();
         var _this = this;
 
-        var meth = '__xmlrpc__' + method.name + ': function(';
+        var meth = '__xmlrpc__';
+
+        if (method.params[0] != 'apiKey')
+            meth += 'insecure__';
+
+        meth += method.name + ': function(';
 
         method.params.forEach(function(p, n) {
             if (n) meth += ', ';

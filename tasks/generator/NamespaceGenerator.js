@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 module.exports = NamespaceGenerator = require('typedef')
 
 .class('NamespaceGenerator') .extends(Generator) .define({
@@ -20,6 +22,8 @@ module.exports = NamespaceGenerator = require('typedef')
     __hidden__addReqs: function(title, reqs)
     {
         this.append('    ' + title + ':\n    {\n');
+
+        reqs = _(reqs).sortBy(function(x) { return x; });
 
         var _this = this;
         reqs.forEach(function(r, n) {
