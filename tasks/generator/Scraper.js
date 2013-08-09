@@ -65,22 +65,30 @@ module.exports = Scraper = require('typedef')
     // Load all the tables up
     scrapeTables: function()
     {
-        var url   = this.tableUrl;
-        var _this = this;
+        var url       = this.tableUrl;
+        var _this     = this;
+        var d         = new Q.defer();
+        var tableInfo;
 
-        var d = new Q.defer();
-
-        Q.nfcall(request, url + '/index.html').then(function(data) {
+        this.getTableInfo()
+        .then(function(info) {
+            tableInfo = info;
+            return Q.nfcall(request, url + '/index.html');
+        })
+        .then(function(data) {
             var $        = cheerio.load(data);
             var list     = $('#tables li');
             var requests = [];
 
             list.each(function() {
-                var $this       = this;
-                var title       = $this.find('a').text();
-                var link        = $this.find('a').attr('href');
+                var $this = this;
+                var title = $this.find('a').text();
+                var link  = $this.find('a').attr('href');
 
+                // Once we've got the table, add the description and fire an
+                // update back on the promise
                 var p = _this.getTableFields(url + '/' + link);
+                p.then(function(t) { t.description = tableInfo[t.tableName]; });
                 p.then(function(s) { d.notify(s.tableName); });
                 requests.push(p);
             });
@@ -92,6 +100,27 @@ module.exports = Scraper = require('typedef')
         });
 
         return d.promise;
+    },
+
+    __hidden__getTableInfo: function()
+    {
+        var url = this.docsUrl + '/developers/tables';
+
+        return Q.nfcall(request, url).then(function(data) {
+            var $ = cheerio.load(data);
+
+            var ret = {};
+
+            $('.views-row').each(function() {
+                var $row = $(this);
+                var title = $row.find('h2').text();
+                var description = $row.find('p').text();
+
+                ret[title] = description;
+            });
+
+            return ret;
+        });
     },
 
     // Scrape the actual table page to get the individiual fields
@@ -108,6 +137,7 @@ module.exports = Scraper = require('typedef')
 
             var ret = {
                 tableName: title,
+                description: '',
                 fields: []
             };
 

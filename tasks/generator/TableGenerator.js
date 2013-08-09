@@ -14,6 +14,7 @@ module.exports = TableGenerator = require('typedef')
         this.addBreak(2);
         this.addDisclaimer();
         this.addBreak();
+        if (table.description) this.addComment(table.description||'');
         this.append('.class(\'' + moduleName + '\') .define({');
         this.addBreak(2);
 
