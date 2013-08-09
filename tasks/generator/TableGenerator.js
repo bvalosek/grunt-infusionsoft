@@ -27,7 +27,7 @@ module.exports = TableGenerator = require('typedef')
                 return;
             }
 
-            if (n) _this.append(',\n');
+            if (n) _this.append(',\n\n');
 
             if (type == 'long' || type == 'double' || type == 'integer')
                 type = 'number';
@@ -35,13 +35,13 @@ module.exports = TableGenerator = require('typedef')
             if (type == 'date')
                 type = 'datetime';
 
-            _this.append('    __field__' + type + '__');
+            _this.append('    __static__field__' + type + '__');
 
             field.access.forEach(function(ac) {
                 _this.append(ac + '__');
             });
 
-            _this.append(name + ': undefined');
+            _this.append(name + ':\n        \'' + name + '\'');
 
         });
 
