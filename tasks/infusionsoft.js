@@ -20,28 +20,36 @@ module.exports = function(grunt) {
             var scraper = new Scraper();
 
             // Scrape and output all of the Service API endpoints
-            var ps = scraper.scrapeServices().then(function(services) {
+            var ps = scraper.scrapeServices()
+            .progress(function(d) {
+                grunt.log.writelns('Parsed service: ' + d.green.bold);
+            })
+            .then(function(services) {
                 services.forEach(function(service) {
                     var g = new ServiceGenerator(service);
-                    grunt.file.write(
-                        f.dest + '/services/' + g.moduleName + '.js', g.code);
+                    var filepath = f.dest + '/services/' + g.moduleName + '.js';
+                    grunt.file.write(filepath, g.code);
                 });
             });
 
             // Scrape and output all of the Tables from the dox
-            var pt = scraper.scrapeTables().then(function(tables) {
+            var pt = scraper.scrapeTables()
+            .progress(function(d) {
+                grunt.log.writelns('Parsed table: ' + d.cyan.bold);
+            })
+            .then(function(tables) {
                 tables.forEach(function(table) {
                     var g = new TableGenerator(table);
-                    grunt.file.write(
-                        f.dest + '/tables/' + g.moduleName + '.js', g.code);
-
+                    var filepath = f.dest + '/tables/' + g.moduleName + '.js';
+                    grunt.file.write(filepath, g.code);
                 });
             });
 
             // Write all the files out to the namespace file
             Q.all([ps, pt]).done(function() {
                 var g = new NamespaceGenerator(scraper);
-                grunt.file.write(f.dest + '/api.js', g.code);
+                var filepath = f.dest + '/api.js';
+                grunt.file.write(filepath, g.code);
             });
 
         });

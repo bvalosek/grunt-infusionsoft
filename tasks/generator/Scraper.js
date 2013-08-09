@@ -31,8 +31,10 @@ module.exports = Scraper = require('typedef')
         var url   = this.docsUrl;
         var _this = this;
 
+        var d = Q.defer();
+
         // Need to create an array of promises for all the pages and their hash
-        return Q.nfcall(request, url + '/api-docs').then(function(data) {
+        Q.nfcall(request, url + '/api-docs').then(function(data) {
             var $        = cheerio.load(data);
             var list     = $('ul.nav-list li a');
             var requests = [];
@@ -40,17 +42,24 @@ module.exports = Scraper = require('typedef')
             list.each(function() {
                 var href = $(this).attr('href');
 
-                if (/service$/.test(href))
-                    requests.push(_this.getServiceInterface(url + href));
+                // If a service, get the promise for the scraped data and
+                // notify when we've got it
+                if (/service$/.test(href)) {
+                    var p = _this.getServiceInterface(url + href);
+                    p.then(function(s) { d.notify(s.serviceName); });
+                    requests.push(p);
+                }
             });
 
             // Spread out over all of the promises, when they're all done,
             // we've got the data in the arguments var, iterate over that and
             // build the hash to return
-            return Q.spread(requests, function() {
-                return _(arguments).toArray();
+            Q.spread(requests, function() {
+                d.resolve(_(arguments).toArray());
             });
         });
+
+        return d.promise;
     },
 
     // Load all the tables up
@@ -59,7 +68,9 @@ module.exports = Scraper = require('typedef')
         var url   = this.tableUrl;
         var _this = this;
 
-        return Q.nfcall(request, url + '/index.html').then(function(data) {
+        var d = new Q.defer();
+
+        Q.nfcall(request, url + '/index.html').then(function(data) {
             var $        = cheerio.load(data);
             var list     = $('#tables li');
             var requests = [];
@@ -69,14 +80,18 @@ module.exports = Scraper = require('typedef')
                 var title       = $this.find('a').text();
                 var link        = $this.find('a').attr('href');
 
-                requests.push(_this.getTableFields(url + '/' + link));
+                var p = _this.getTableFields(url + '/' + link);
+                p.then(function(s) { d.notify(s.tableName); });
+                requests.push(p);
             });
 
-            return Q.spread(requests, function() {
-                return _(arguments).toArray();
+            Q.spread(requests, function() {
+                d.resolve(_(arguments).toArray());
             });
 
         });
+
+        return d.promise;
     },
 
     // Scrape the actual table page to get the individiual fields
