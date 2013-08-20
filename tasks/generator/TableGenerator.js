@@ -19,6 +19,8 @@ module.exports = TableGenerator = require('typedef')
         this.addBreak(2);
 
         var _this = this;
+        var primary;
+
         table.fields.forEach(function(field, n) {
             var name   = field.name;
             var type   = field.type.toLowerCase();
@@ -36,6 +38,12 @@ module.exports = TableGenerator = require('typedef')
             if (type == 'date')
                 type = 'datetime';
 
+            // Id as number, assume its primary
+            if (name == 'Id' && type == 'number') {
+                type = 'primary__' + type;
+                primary = name;
+            }
+
             _this.append('    __static__field__' + type + '__');
 
             field.access.forEach(function(ac) {
@@ -45,6 +53,9 @@ module.exports = TableGenerator = require('typedef')
             _this.append(name + ':\n        \'' + name + '\'');
 
         });
+
+        if (!primary)
+            console.log(('No presumed primary key found for ' + moduleName).yellow);
 
         this.addBreak(2);
         this.append('});');
