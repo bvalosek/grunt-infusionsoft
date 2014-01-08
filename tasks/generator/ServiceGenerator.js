@@ -19,7 +19,12 @@ module.exports = ServiceGenerator = require('typedef')
         this.append('.interface(\'' + moduleName + '\') .define({');
         this.addBreak();
 
+	    var processedMethods = [];
         service.methods.forEach(function(method, index) {
+	        if (processedMethods.indexOf(method.name) >= 0) {
+		        return;
+	        }
+	        processedMethods.push(method.name);
             if (index) this.code += ',\n';
             this.addMethod(method);
         }.bind(this));

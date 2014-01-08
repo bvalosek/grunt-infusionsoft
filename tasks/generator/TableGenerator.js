@@ -21,7 +21,12 @@ module.exports = TableGenerator = require('typedef')
         var _this = this;
         var primary;
 
+	    var processedFields = [];
         table.fields.forEach(function(field, n) {
+	        if (processedFields.indexOf(field.name) >= 0) {
+		        return;
+	        }
+	        processedFields.push(field.name);
             var name   = field.name;
             var type   = field.type.toLowerCase();
 

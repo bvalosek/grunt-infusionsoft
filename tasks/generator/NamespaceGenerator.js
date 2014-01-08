@@ -16,7 +16,7 @@ module.exports = NamespaceGenerator = require('typedef')
         this.append(',\n\n');
         this.addReqs('tables', scraper.tables);
 
-        this.append('\n\n}');
+        this.append('\n\n};');
     },
 
     __hidden__addReqs: function(title, reqs)
@@ -34,6 +34,6 @@ module.exports = NamespaceGenerator = require('typedef')
         });
 
         this.append('\n    }');
-    },
+    }
 
 });

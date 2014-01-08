@@ -171,7 +171,11 @@ module.exports = Scraper = require('typedef')
             var $ = cheerio.load(data);
 
             var serviceName =
-                $('.content h1').text().replace(/API/g, '').trim();
+	            $('.collection')
+		            .first()
+		            .text()
+		            .trim()
+		            .replace(/\./g, '');
             var serviceDescription =
                 $('h1').nextAll('p').first().text();
 
