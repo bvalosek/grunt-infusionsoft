@@ -170,8 +170,12 @@ module.exports = Scraper = require('typedef')
         return Q.nfcall(request, href).then(function(data) {
             var $ = cheerio.load(data);
 
-            var serviceName =
-                $('.content h1').text().replace(/API/g, '').trim();
+            var serviceName = 
+	            $('.collection')
+		            .first()
+		            .text()
+		            .trim()
+		            .replace(/\./g, '');
             var serviceDescription =
                 $('h1').nextAll('p').first().text();
 
