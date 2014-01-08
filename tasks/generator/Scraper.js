@@ -170,7 +170,7 @@ module.exports = Scraper = require('typedef')
         return Q.nfcall(request, href).then(function(data) {
             var $ = cheerio.load(data);
 
-            var serviceName = 
+            var serviceName =
 	            $('.collection')
 		            .first()
 		            .text()
