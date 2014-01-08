@@ -24,9 +24,9 @@ module.exports = ServiceGenerator = require('typedef')
 	        if (processedMethods.indexOf(method.name) >= 0) {
 		        return;
 	        }
+	        processedMethods.push(method.name);
             if (index) this.code += ',\n';
             this.addMethod(method);
-	        processedMethods.push(method.name);
         }.bind(this));
 
         this.addBreak(2);
